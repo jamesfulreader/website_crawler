@@ -1,0 +1,11 @@
+{
+  "name": "wb_crawl",
+  "version": "1.0.0",
+  "description": "web crawler project",
+  "main": "main.js",
+  "scripts": {
+   "start": "node main.js" 
+  },
+  "author": "James Fulreader",
+  "license": "ISC"
+}
