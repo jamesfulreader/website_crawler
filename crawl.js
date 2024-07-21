@@ -1,3 +1,5 @@
+import { JSDOM } from 'jsdom'
+
 const normalizeURL = (url) => {
   // normalizeURL() function to map all of those same inputs
   // to a single normalized output: blog.boot.dev/path
@@ -21,4 +23,31 @@ const normalizeURL = (url) => {
   return fullPath
 }
 
-export { normalizeURL }
+// const getURLSFromHTML = (htmlBody, baseURL) => {
+//   const dom = new JSDOM(htmlBody)
+//   let urlList = dom.window.document.querySelectorAll('a')
+//   urlList.forEach((element) => {
+//     console.log(element.href)
+//   })
+//   return baseURL
+// } misunderstood the assignment
+
+const getURLSFromHTML = (htmlBody, baseURL) => {
+  const dom = new JSDOM(htmlBody)
+  const aTags = dom.window.document.querySelectorAll('a')
+  const absUrls = []
+
+  for (const aTag of aTags) {
+    let href = aTag.getAttribute('href')
+    try {
+      href = new URL(href, baseURL).href
+      absUrls.push(href)
+    } catch (error) {
+      console.error(`${error.message} with ${href}`)
+    }
+  }
+
+  return absUrls
+}
+
+export { normalizeURL, getURLSFromHTML }
