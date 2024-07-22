@@ -50,4 +50,24 @@ const getURLSFromHTML = (htmlBody, baseURL) => {
   return absUrls
 }
 
-export { normalizeURL, getURLSFromHTML }
+const crawlPage = async (url) => {
+  let options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'text/html',
+    },
+  }
+  try {
+    let res = await fetch(url, { options })
+    if (!res.ok) {
+      throw new Error(`HTTP error: ${res.status}`)
+    }
+    let data = await res.text()
+    console.log(data)
+    return data
+  } catch (error) {
+    console.error(`An error has occurred: ${error.message}`)
+  }
+}
+
+export { normalizeURL, getURLSFromHTML, crawlPage }
