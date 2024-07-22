@@ -50,7 +50,7 @@ const getURLSFromHTML = (htmlBody, baseURL) => {
   return absUrls
 }
 
-const crawlPage = async (url) => {
+const fetchAndParse = async (url) => {
   let options = {
     method: 'GET',
     headers: {
@@ -63,11 +63,34 @@ const crawlPage = async (url) => {
       throw new Error(`HTTP error: ${res.status}`)
     }
     let data = await res.text()
-    console.log(data)
     return data
   } catch (error) {
     console.error(`An error has occurred: ${error.message}`)
   }
+}
+
+const crawlPage = async (baseURL, currentURL = baseURL, pages = {}) => {
+  if (currentURL !== baseURL) {
+    return pages
+  }
+
+  const normalize = normalizeURL(currentURL)
+
+  if (normalize in pages) {
+    pages[normalize]++
+    return pages
+  } else {
+    pages[normalize] = 1
+  }
+
+  const htmlContent = await fetchAndParse(currentURL)
+  const allURLS = getURLSFromHTML(htmlContent, baseURL)
+
+  for (eachURL in allURLS) {
+    pages = await crawlPage(eachURL, eachURL, pages)
+  }
+
+  return pages
 }
 
 export { normalizeURL, getURLSFromHTML, crawlPage }
