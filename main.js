@@ -1,4 +1,5 @@
 import { crawlPage } from './crawl.js'
+import { printReport } from './report.js'
 const main = async () => {
   // take in BASE_URL arg from cli
   // if num of cli args < 1 print error EXIT
@@ -14,8 +15,7 @@ const main = async () => {
   const baseURL = process.argv[2]
   console.log(`processing your request to ${baseURL} now . . .`)
   const pages = await crawlPage(baseURL, baseURL)
-
-  console.log(pages)
+  printReport(pages)
 }
 
 main()
