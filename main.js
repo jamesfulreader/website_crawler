@@ -13,7 +13,9 @@ const main = async () => {
   // if num cli args === 1 baseURL = arg print "processing now. . ."
   const baseURL = process.argv[2]
   console.log(`processing your request to ${baseURL} now . . .`)
-  await crawlPage(baseURL)
+  const pages = await crawlPage(baseURL, baseURL)
+
+  console.log(pages)
 }
 
 main()

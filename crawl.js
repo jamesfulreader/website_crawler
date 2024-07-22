@@ -62,7 +62,7 @@ const fetchAndParse = async (url) => {
     if (!res.ok) {
       throw new Error(`HTTP error: ${res.status}`)
     }
-    let data = await res.text()
+    let data = res.text()
     return data
   } catch (error) {
     console.error(`An error has occurred: ${error.message}`)
@@ -70,7 +70,10 @@ const fetchAndParse = async (url) => {
 }
 
 const crawlPage = async (baseURL, currentURL = baseURL, pages = {}) => {
-  if (currentURL !== baseURL) {
+  const currentURLObj = new URL(currentURL)
+  const baseURLObj = new URL(baseURL)
+
+  if (currentURLObj.hostname !== baseURLObj.hostname) {
     return pages
   }
 
@@ -79,15 +82,23 @@ const crawlPage = async (baseURL, currentURL = baseURL, pages = {}) => {
   if (normalize in pages) {
     pages[normalize]++
     return pages
-  } else {
-    pages[normalize] = 1
   }
 
-  const htmlContent = await fetchAndParse(currentURL)
-  const allURLS = getURLSFromHTML(htmlContent, baseURL)
+  pages[normalize] = 1
 
-  for (eachURL in allURLS) {
-    pages = await crawlPage(eachURL, eachURL, pages)
+  let htmlContent = ''
+
+  try {
+    htmlContent = await fetchAndParse(currentURL)
+  } catch (error) {
+    console.error(`${error.message}`)
+    return pages
+  }
+
+  const allURLS = await getURLSFromHTML(htmlContent, baseURL)
+
+  for (const nextURL of allURLS) {
+    pages = await crawlPage(baseURL, nextURL, pages)
   }
 
   return pages
